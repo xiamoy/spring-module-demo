@@ -8,6 +8,7 @@ import org.springframework.context.ApplicationListener;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -30,9 +31,19 @@ public class RemoteConfigEventListenerHandler implements ApplicationListener {
                         Object newValue = source.get(propKey);
                         for (PropertyBeanWrapper item : propertyBeanWrappers) {
                             try {
-                                item.getField().set(item.getBean(), newValue);
+                                switch (item.getAutowireType()) {
+                                    case Field:
+                                        item.getField().set(item.getBean(), newValue);
+                                        break;
+                                    case Method:
+                                        item.getMethod().invoke(item.getBean(), new Object[]{newValue});
+                                        break;
+                                }
+
                             } catch (IllegalAccessException e) {
-                                log.error("failed to update property for {}", item);
+                                log.error("failed to set filed property for {}", item);
+                            } catch (InvocationTargetException e) {
+                                log.error("failed to invoke method property for {}", item);
                             }
                         }
                     }

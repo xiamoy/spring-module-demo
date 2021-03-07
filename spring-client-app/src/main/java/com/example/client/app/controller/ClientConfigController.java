@@ -25,13 +25,30 @@ public class ClientConfigController implements ApplicationEventPublisherAware {
     @Value("#{'${config.ccy}'.split(',')}")
     private String[] ccyArray;
 
-//    @Value("#{${test.map}}")
+    private String configValue;
+    private String initer;
+
+    public String getConfigValue() {
+        return configValue;
+    }
+
+    public ClientConfigController(@Value("${config.ccy}") String configCcy) {
+        this.initer = configCcy;
+    }
+
+    @Value("${config.value}")
+    public void setConfigValue(String configValue) {
+        this.configValue = configValue;
+    }
+
+    //    @Value("#{${test.map}}")
 //    private Map<String, Object> testMap;
 
     @RequestMapping("/config")
     public Object getConfig() {
         System.out.println("configKey:" + configKey);
         System.out.println("configCcy:" + ccyArray);
+        System.out.println("configValue:" + configValue);
         System.out.println("applicationName:" + applicationName);
         return configKey;
     }
@@ -41,6 +58,7 @@ public class ClientConfigController implements ApplicationEventPublisherAware {
         Map<String, Object> map = new HashMap<>();
         map.put("config.key", "mongo-config");
         map.put("config.ccy", "CNY,EUR,AUD,FRY");
+        map.put("config.value", "abcde");
         RemoteConfigChangeEvent remoteConfigChangeEvent = new RemoteConfigChangeEvent(map);
         applicationEventPublisher.publishEvent(remoteConfigChangeEvent);
         return "Published";

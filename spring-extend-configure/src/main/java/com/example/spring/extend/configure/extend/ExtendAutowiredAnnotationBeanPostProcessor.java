@@ -1,9 +1,8 @@
 package com.example.spring.extend.configure.extend;
 
+import com.example.spring.extend.configure.cache.AutowireType;
 import com.example.spring.extend.configure.cache.CachedAutowiredFields;
-import com.example.spring.extend.configure.cache.CachedRemoteProperties;
 import com.example.spring.extend.configure.cache.PropertyBeanWrapper;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.BeanUtils;
@@ -678,6 +677,20 @@ public class ExtendAutowiredAnnotationBeanPostProcessor extends AutowiredAnnotat
                 try {
                     ReflectionUtils.makeAccessible(method);
                     method.invoke(bean, arguments);
+                    if (method.getAnnotation(Value.class) != null) {
+                        String placeHolder = method.getAnnotation(Value.class).value();
+                        placeHolder = placeHolder.replace("${", "");
+                        placeHolder = placeHolder.replace("}", "");
+                        if (CachedAutowiredFields.isRemoteProperty(placeHolder)) {
+                            PropertyBeanWrapper beanWrapper = new PropertyBeanWrapper();
+                            beanWrapper.setProperty(placeHolder);
+                            beanWrapper.setBean(bean);
+                            beanWrapper.setAutowireType(AutowireType.Method);
+                            beanWrapper.setMethod(method);
+                            CachedAutowiredFields.put(placeHolder, beanWrapper);
+                        }
+                    }
+
                 } catch (InvocationTargetException ex) {
                     throw ex.getTargetException();
                 }
