@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration>
+    <Properties>
+        <!-- 配置日志文件输出目录 ${sys:user.home} -->
+        <Property name="LOG_HOME">${sys:user.home}/logs</Property>
+        <property name="ERROR_LOG_FILE_NAME">${sys:user.home}/logs/error</property>
+        <property name="WARN_LOG_FILE_NAME">/${sys:user.home}/logs/warn</property>
+
+        <property name="PATTERN">%d{yyyy-MM-dd HH:mm:ss.SSS} [%t-%L] %-5level %logger{36} - %msg%n</property>
+    </Properties>
+
+    <Appenders>
+        <!--  <Socket name="A1" host="localHost" port="7000">
+              <RegexFilter regex=".*statistics.*" onMatch="ACCEPT" onMismatch="DENY"/>
+              <JsonLayout compact="true" eventEol="true" />
+
+          </Socket>-->
+        <Console name="Console" target="SYSTEM_OUT">
+            <!-- 控制台只输出level及以上级别的信息(onMatch),其他的直接拒绝(onMismatch) -->
+            <!-- <ThresholdFilter level="trace" onMatch="ACCEPT"
+                              onMismatch="DENY" />-->
+            <PatternLayout
+                    pattern="${PATTERN}"/>
+        </Console>
+    </Appenders>
+    <Loggers>
+        <Root level="info">
+            <!--<AppenderRef ref="A1"/>-->
+            <AppenderRef ref="Console"/>
+        </Root>
+    </Loggers>
+</Configuration>

@@ -1,0 +1,13 @@
+server:
+  port: 8011
+
+spring:
+  application:
+    name: client-remote-config-application
+
+config:
+  server:
+    url: http://localhost:8089/config/data
+  client:
+    application:
+      name: ${spring.application.name}
